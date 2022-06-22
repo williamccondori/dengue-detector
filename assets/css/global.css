@@ -1,0 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;500;700&display=swap');
+
+body {
+ font-family: 'JetBrains Mono';
+}
+
+.card {
+  background-color: white;
+  box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%),
+    0 1px 5px 0 rgb(0 0 0 / 20%);
+  border-radius: 0.1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+.card h1 {
+  font-size: 1rem;
+}
+
+.leaflet-popup-content{
+  margin: 1.5rem 0.25rem 0.25rem 0.25rem !important;
+}
+
+.leaflet-popup-content-wrapper {
+  box-shadow: 0 2px 2px 0 rgb(0 0 0 / 14%), 0 3px 1px -2px rgb(0 0 0 / 12%),
+    0 1px 5px 0 rgb(0 0 0 / 20%) !important;
+  border-radius: 0.1rem  !important;
+}
