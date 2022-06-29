@@ -1,16 +1,16 @@
 <template>
   <div class="sidebar">
-    <LayerSelector />
+    <!-- <LayerSelector /> -->
     <LayerSummary />
   </div>
 </template>
 
 <script>
-import LayerSelector from './sidebar/LayerSelector.vue'
+// import LayerSelector from './sidebar/LayerSelector.vue'
 import LayerSummary from './sidebar/LayerSummary.vue'
 export default {
   components: {
-    LayerSelector,
+    // LayerSelector,
     LayerSummary,
   },
 }

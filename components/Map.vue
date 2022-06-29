@@ -5,14 +5,28 @@
       :zoom="6"
       :center="[-10.1884015, -75.6500792]"
     >
-      <LTileLayer :url="url"> </LTileLayer>
+      <LControlLayers position="topright" />
+      <LControlScale position="bottomleft" :metric="true" />
+      <LMiniMap
+        v-if="miniMap"
+        :layer="miniMap.layer"
+        :options="miniMap.options"
+      />
+      <LTileLayer
+        v-for="baseMap in baseMaps"
+        :key="baseMap.id"
+        :name="baseMap.name"
+        :url="baseMap.url"
+        :visible="baseMap.isVisible"
+        layer-type="base"
+      />
       <LGeoJson
-        v-if="geojson"
+        v-if="geojson && isFeatureMapVisible"
         :geojson="geojson"
         :options="{ pointToLayer: pointToLayer, onEachFeature: onEachFeature }"
       />
       <LHeatMap
-        v-if="heatMapValues"
+        v-if="heatMapValues && isHeatMapVisible"
         :lat-lng="heatMapValues"
         :radius="50"
         :min-opacity="0.75"
@@ -25,6 +39,8 @@
 
 <script>
 import axios from 'axios'
+import L from 'leaflet'
+import { mapState, mapActions } from 'vuex'
 import LHeatMap from '~/components/heatmap/LHeatMap.vue'
 
 export default {
@@ -33,10 +49,27 @@ export default {
   },
   data() {
     return {
-      url: 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
       geojson: undefined,
       heatMapValues: undefined,
     }
+  },
+  async fetch() {
+    try {
+      await this.getMiniMap()
+      await this.getBaseMaps()
+    } catch (error) {
+      this.$message.error(error.message)
+    }
+  },
+  computed: {
+    ...mapState(['baseMaps', 'isHeatMapVisible', 'isFeatureMapVisible']),
+    miniMap() {
+      const miniMap = this.$store.state.miniMap
+      return {
+        ...miniMap,
+        layer: L.tileLayer(miniMap.url),
+      }
+    },
   },
   async mounted() {
     const { data } = await axios.get(
@@ -46,9 +79,12 @@ export default {
     this.heatMapValues = this.geoJson2heat(data, 1)
   },
   methods: {
+    ...mapActions(['getMiniMap', 'getBaseMaps']),
     pointToLayer(_, latlng) {
       return L.circleMarker(latlng, {
-        color: 'red',
+        color: 'cyan',
+        stroke: true,
+        weight: 2,
       })
     },
     onEachFeature(feature, layer) {
