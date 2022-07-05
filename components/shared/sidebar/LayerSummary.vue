@@ -1,13 +1,17 @@
 <template>
   <div class="card">
-    <h1>Capas</h1>
+    <h1>
+      <b>VISOR DE CASOS DE DENGUE</b>
+      <i>PUERTO MALDONADO</i>
+    </h1>
+    <h1>Capas de información</h1>
     <div>
-      <div class="layer-summary__item">
+      <!-- <div class="layer-summary__item">
         <h1>Mapa de calor</h1>
         <a-checkbox @change="onChangeHeatMapHandler" />
-      </div>
+      </div> -->
       <div class="layer-summary__item">
-        <h1>Datos estadísticos</h1>
+        <h1>Mostrar información detallada</h1>
         <a-checkbox @change="onChangeFeatureMapHandler" />
       </div>
     </div>

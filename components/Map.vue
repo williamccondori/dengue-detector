@@ -2,8 +2,8 @@
   <client-only>
     <LMap
       style="width: 100%; min-height: 100vh"
-      :zoom="6"
-      :center="[-10.1884015, -75.6500792]"
+      :zoom="14"
+      :center="[-12.5924632, -69.1936765]"
     >
       <LControlLayers position="topright" />
       <LControlScale position="bottomleft" :metric="true" />
@@ -12,6 +12,21 @@
         :layer="miniMap.layer"
         :options="miniMap.options"
       />
+      <LWMSTileLayer
+        v-for="wmsLayer in wmsLayers"
+        :key="wmsLayer.id"
+        :version="wmsLayer.version"
+        :base-url="wmsLayer.baseUrl"
+        :format="wmsLayer.format"
+        :transparent="wmsLayer.isTransparent"
+        :layers="wmsLayer.layers"
+        :name="wmsLayer.name"
+        :visible="wmsLayer.isVisible"
+        layer-type="overlay"
+        :options="{
+          zIndex: 1,
+        }"
+      />
       <LTileLayer
         v-for="baseMap in baseMaps"
         :key="baseMap.id"
@@ -19,20 +34,23 @@
         :url="baseMap.url"
         :visible="baseMap.isVisible"
         layer-type="base"
+        :options="{
+          zIndex: 0,
+        }"
       />
       <LGeoJson
         v-if="geojson && isFeatureMapVisible"
         :geojson="geojson"
         :options="{ pointToLayer: pointToLayer, onEachFeature: onEachFeature }"
       />
-      <LHeatMap
+      <!-- <LHeatMap
         v-if="heatMapValues && isHeatMapVisible"
         :lat-lng="heatMapValues"
         :radius="50"
         :min-opacity="0.75"
         :max-zoom="10"
         :blur="60"
-      />
+      /> -->
     </LMap>
   </client-only>
 </template>
@@ -41,11 +59,11 @@
 import axios from 'axios'
 import L from 'leaflet'
 import { mapState, mapActions } from 'vuex'
-import LHeatMap from '~/components/heatmap/LHeatMap.vue'
+// import LHeatMap from '~/components/heatmap/LHeatMap.vue'
 
 export default {
   components: {
-    LHeatMap,
+    // LHeatMap,
   },
   data() {
     return {
@@ -57,12 +75,18 @@ export default {
     try {
       await this.getMiniMap()
       await this.getBaseMaps()
+      await this.getWmsLayers()
     } catch (error) {
       this.$message.error(error.message)
     }
   },
   computed: {
-    ...mapState(['baseMaps', 'isHeatMapVisible', 'isFeatureMapVisible']),
+    ...mapState([
+      'baseMaps',
+      'wmsLayers',
+      'isHeatMapVisible',
+      'isFeatureMapVisible',
+    ]),
     miniMap() {
       const miniMap = this.$store.state.miniMap
       return {
@@ -73,18 +97,20 @@ export default {
   },
   async mounted() {
     const { data } = await axios.get(
-      'https://api.map-viewer-app.williamcondori.work/api/querylayers?name=puerto_maldonado'
+      'https://api.map-viewer-app.williamcondori.work/api/querylayers?name=casos_dengue'
     )
     this.geojson = data
     this.heatMapValues = this.geoJson2heat(data, 1)
   },
   methods: {
-    ...mapActions(['getMiniMap', 'getBaseMaps']),
+    ...mapActions(['getMiniMap', 'getBaseMaps', 'getWmsLayers']),
     pointToLayer(_, latlng) {
       return L.circleMarker(latlng, {
-        color: 'cyan',
+        color: 'red',
         stroke: true,
-        weight: 2,
+        weight: 0.5,
+        fill: true,
+        radius: 5,
       })
     },
     onEachFeature(feature, layer) {
